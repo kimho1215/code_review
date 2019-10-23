@@ -32,10 +32,11 @@ public class CompressString {
    * char change, it writes in the StringBuilder the compressed partial result.
    */
   public String compress(String src) {
-    if (src.size() == 0 || src.length() == 1)
+    if (!hasEnoughSizeToCompress()) {
       return src;
+    }
 
-    StringBuilder stringBuilder = new StringBuilder();
+    StringBuilder compressedStringBuilder = new StringBuilder();
     int repeatedCharCounter = 1;
     char previousChar = src.charAt(0);
     for (int i = 1; i < src.length(); i++)
@@ -47,31 +48,46 @@ public class CompressString {
         repeatedCharCounter++;
       } else
       {
-        addChar(stringBuilder, previousChar);
+        addChar(compressedStringBuilder, previousChar);
         if (repeatedCharCounter > 1)
         {
-          stringBuilder.append(repeatedCharCounter);
+          compressedStringBuilder.append(repeatedCharCounter);
           repeatedCharCounter = 1;
         }
         previousChar = currentChar;
       }
     }
 
-    appendLastCharIfNeeded(stringBuilder, repeatedCharCounter, previousChar);
+    appendLastCharIfNeeded(compressedStringBuilder, repeatedCharCounter, previousChar);
 
-    return stringBuilder.toString();
+    return compressedStringBuilder.toString();
   }
 
+  /**
+   * Check validity of parameter.
+   */
+  private boolean hasEnoughSizeToCompress(String source) {
+    boolean hasEnoughSize = true;
+    
+    if (src.size() == 0 || src.length() == 1) {
+      hasEnoughSize = false;
+    }
+    
+    return hasEnoughSize;
+  }
+  
   /**
    * Time complexity O(n) Space complexity O(n)
    * First while loop for finding repeat groups, and inner while loop is for finding same characters
    */
   public String compressAlternativeApproach(String src) {
-    if (src.size() == 0 || src.length() == 1)
+    if (!hasEnoughSizeToCompress()) {
       return src;
+    }
+    
     int index = 0;
     int count = 1;
-    StringBuilder stringBuilder = new StringBuilder();
+    StringBuilder compressedStringBuilder = new StringBuilder();
     while (index < src.length())
     {
       while (index < src.length() - 1)
@@ -82,9 +98,9 @@ public class CompressString {
           count++;
         } else
         {
-          stringBuilder.append(src.charAt(index));
+          compressedStringBuilder.append(src.charAt(index));
           if (count > 1)
-            stringBuilder.append(count);
+            compressedStringBuilder.append(count);
           count = 1;
           index++;
           //System.out.print(index);
@@ -95,30 +111,30 @@ public class CompressString {
       {
         if (src.charAt(index) != src.charAt(index - 1))
         {
-          stringBuilder.append(src.charAt(index));
+          compressedStringBuilder.append(src.charAt(index));
         } else
         {
-          stringBuilder.append(src.charAt(index));
+          compressedStringBuilder.append(src.charAt(index));
           if (count > 1)
-            stringBuilder.append(count);
+            compressedStringBuilder.append(count);
         }
         index++;
         break;
       }
     }
-    return stringBuilder.toString();
+    return compressedStringBuilder.toString();
   }
 
   private boolean isCharRepeated(char previousChar, char currentChar) {
     return currentChar == previousChar;
   }
 
-  private void appendLastCharIfNeeded(StringBuilder stringBuilder, int repeatedCharCounter,
+  private void appendLastCharIfNeeded(StringBuilder compressedStringBuilder, int repeatedCharCounter,
       char previousChar) {
     if (repeatedCharCounter > 1)
     {
-      addChar(stringBuilder, previousChar);
-      stringBuilder.append(repeatedCharCounter);
+      addChar(compressedStringBuilder, previousChar);
+      compressedStringBuilder.append(repeatedCharCounter);
     }
   }
 
@@ -135,36 +151,36 @@ public class CompressString {
     return compressRecursiveInner(src, new StringBuilder(), 1, src.charAt(0), 1);
   }
 
-  private String compressRecursiveInner(String src, StringBuilder sb, int i, char previousChar,
+  private String compressRecursiveInner(String src, StringBuilder compressedStringBuilder, int position, char previousChar,
       int charCounter) {
-    boolean thereIsNoMoreWordToCompress = i == src.length();
+    boolean thereIsNoMoreWordToCompress = (position == src.length());
     if (thereIsNoMoreWordToCompress == true)
     {
-      addChar(sb, previousChar);
-      addCharCounterIfNeeded(sb, charCounter);
-      return sb.toString();
+      addChar(compressedStringBuilder, previousChar);
+      addCharCounterIfNeeded(compressedStringBuilder, charCounter);
+      return compressedStringBuilder.toString();
     } else
     {
-      if (isCharRepeated(src.charAt(i), previousChar))
+      if (isCharRepeated(src.charAt(position), previousChar))
       {
-        return compressRecursiveInner(src, sb, i + 1, previousChar, charCounter + 1);
+        return compressRecursiveInner(src, compressedStringBuilder, position + 1, previousChar, charCounter + 1);
       } else
       {
-        addChar(sb, previousChar);
-        addCharCounterIfNeeded(sb, charCounter);
-        return compressRecursiveInner(src, sb, i + 1, src.charAt(i), 1);
+        addChar(compressedStringBuilder, previousChar);
+        addCharCounterIfNeeded(compressedStringBuilder, charCounter);
+        return compressRecursiveInner(src, compressedStringBuilder, position + 1, src.charAt(position), 1);
       }
     }
   }
 
-  private void addCharCounterIfNeeded(StringBuilder sb, int charCounter) {
+  private void addCharCounterIfNeeded(StringBuilder compressedStringBuilder, int charCounter) {
     if (charCounter > 1)
     {
-      sb.append(charCounter);
+      compressedStringBuilder.append(charCounter);
     }
   }
 
-  private void addChar(StringBuilder sb, char previousChar) {
-    sb.append(previousChar);
+  private void addChar(StringBuilder compressedStringBuilder, char previousChar) {
+    compressedStringBuilder.append(previousChar);
   }
 }
